@@ -1,0 +1,45 @@
+{
+  "manifest_version": 3,
+  "name": "Password Vault",
+  "version": "1.0",
+  "description": "Extensión para gestionar contraseñas.",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting",
+    "declarativeContent",
+    "notifications"
+  ],
+  "host_permissions": [
+    "http://localhost:8000/api/*"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "128": "icons/logo.png"
+    }
+  },
+  "icons": {
+    "128": "icons/logo.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://*/*", "http://*/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["icons/logo.png", "assets/css/*", "assets/js/*"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'none';"
+  }
+}
