@@ -99,15 +99,64 @@ h2 {
 
 /* Botón de cerrar sesión */
 .logout {
-  background-color: #20a060; 
+  width: 100%;
+  max-width: 100px;
+  background: #d9534f;
   color: white;
-  padding: 10px;
-  text-align: center;
-  border-radius: 5px;
+  padding: 12px;
+  border-radius: 6px;
   cursor: pointer;
-  margin-top: 15px;
+  font-size: 13px;
+  font-weight: bold;
+  text-align: center;
+  transition: 0.3s;
+  border: none;
+  outline: none;
 }
 
 .logout:hover {
-  background-color:#188a50; 
+  background: #c9302c;
 }
+
+.password-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.password-container input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  background: #fafafa;
+  padding-right: 35px; 
+}
+
+.toggle-button {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.eye-icon {
+  width: 16px;
+  height: 16px;
+  opacity: 0.6;
+  transition: opacity 0.3s;
+}
+
+.eye-icon:hover {
+  opacity: 1;
+}
+

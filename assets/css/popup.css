@@ -31,29 +31,34 @@ body {
   }
 
   input {
-    padding: 12px;
-    font-size: 16px;
     width: 95%;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    padding: 5px;
+    color: rgb(150, 150, 150);
+    border: 0;
+    border-bottom: 2px solid rgb(200, 200, 200);
+    outline: 0;
   }
 
+  input:focus,
+  input:valid{
+    border-bottom: 2px solid cornflowerblue;
+  }
+  
   button {
     padding: 12px;
     font-size: 16px;
-    background-color:#20a060; 
+    background-color: #d9534f;
     color: white;
     border: none;
     cursor: pointer;
     width: 100%;
-    border-radius: 5px;
+    border-radius: 20px;
     font-weight: bold;
   }
 
   button:hover {
-   background: #188a50; 
+   background: #c9302c;
   }
-
   .error-message {
     color: red;
     font-size: 14px;
@@ -72,7 +77,7 @@ body {
   }
 
   .small-image {
-    width: 110px; /* Ajusta el tamaño deseado */
+    width: 150px; /* Ajusta el tamaño deseado */
     height: auto; /* Mantiene la proporción */
     display: block;
     margin: 0 auto; /* Centrar si es necesario */
