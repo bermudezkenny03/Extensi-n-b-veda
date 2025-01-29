@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const apiUrl = "http://localhost:8000/api/login";
+    const apiUrl = "http://localhost:8000/api/login"; // Ajusta la URL según sea necesario
     const credentials = { email, password };
 
     fetch(apiUrl, {
@@ -31,17 +31,20 @@ document.addEventListener("DOMContentLoaded", () => {
           data.success.token &&
           data.success.user_id &&
           data.success.role_id &&
-          data.success.email &&
-          data.success.name
+          data.success.name &&
+          data.success.role
         ) {
+          // Verificar si chrome.storage está disponible
           if (typeof chrome !== "undefined" && chrome.storage) {
+            // Guardar el token y el user_id en Chrome Storage
             chrome.storage.local.set(
               {
                 token: data.success.token,
                 user_id: data.success.user_id,
-                email: data.success.email,
                 role_id: data.success.role_id,
                 name: data.success.name,
+                role: data.success.role,
+                email: email, // Guardar el email para mostrar en el dashboard
               },
               () => {
                 if (chrome.runtime.lastError) {
@@ -68,6 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
             alert("No se pudo guardar la sesión.");
           }
         } else {
+          // Manejar errores de autenticación
           alert(data.message || "Error desconocido en el inicio de sesión.");
         }
       })
@@ -76,6 +80,8 @@ document.addEventListener("DOMContentLoaded", () => {
         alert("Hubo un problema con el inicio de sesión.");
       });
   });
+
+  // Redirigir automáticamente si el usuario ya está autenticado
   if (typeof chrome !== "undefined" && chrome.storage) {
     chrome.storage.local.get(["token"], (result) => {
       if (result.token) {
