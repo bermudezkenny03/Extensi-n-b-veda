@@ -63,8 +63,7 @@ const detectForms = () => {
             2
           )
         );
-
-        fetch("http://localhost:8000/api/passwords", {
+        fetch("http://localhost:8000/api/pivote-data", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -79,59 +78,53 @@ const detectForms = () => {
             if (data.passwords && data.passwords.length > 0) {
               let credentials =
                 data.passwords.find(
-                  (cred) => cred.url === fullUrl && cred.username === userEmail
+                  (cred) =>
+                    cred.url === fullUrl &&
+                    cred.username === userEmail &&
+                    cred.password_role?.role_id === 2
                 ) ||
                 data.passwords.find(
-                  (cred) => cred.url === baseUrl && cred.username === userEmail
+                  (cred) =>
+                    cred.url === baseUrl &&
+                    cred.password_role?.role_id === userRole &&
+                    cred.password_role?.role_id !== 2
                 );
 
+              console.log(
+                data.passwords.find((cred) => cred.password_role?.password_id)
+              );
+
               if (!credentials) {
-                console.log(
-                  "No se encontró una credencial exacta con el email del usuario y la URL. No se autocompletará ninguna credencial."
-                );
+                console.log("No se encontró una credencial exacta.");
                 return;
               }
 
-              if (credentials && credentials.username === userEmail) {
-                credentialExists = true;
-                console.log(
-                  "Credencial encontrada y validada con el usuario actual:",
-                  credentials
+              console.log("Credencial encontrada:", credentials);
+              credentialExists = true;
+
+              // Autocompletar credenciales
+              userField.value = credentials.username;
+              passField.value = credentials.password;
+
+              alert("Se han autocompletado las credenciales guardadas.");
+
+              setTimeout(() => {
+                console.log("Intentando iniciar sesión automáticamente...");
+                userField.dispatchEvent(new Event("input", { bubbles: true }));
+                passField.dispatchEvent(new Event("input", { bubbles: true }));
+                passField.dispatchEvent(
+                  new KeyboardEvent("keydown", { key: "Enter", bubbles: true })
                 );
-                userField.value = credentials.username;
-                passField.value = credentials.password;
 
-                alert("Se han autocompletado las credenciales guardadas.");
-
-                setTimeout(() => {
-                  console.log("Intentando iniciar sesión automáticamente...");
-                  userField.dispatchEvent(
-                    new Event("input", { bubbles: true })
-                  );
-                  passField.dispatchEvent(
-                    new Event("input", { bubbles: true })
-                  );
-                  passField.dispatchEvent(
-                    new KeyboardEvent("keydown", {
-                      key: "Enter",
-                      bubbles: true,
-                    })
-                  );
-
-                  const submitButton = form.querySelector(
-                    'button[type="submit"], input[type="submit"]'
-                  );
-                  if (submitButton) {
-                    submitButton.click();
-                  } else {
-                    form.dispatchEvent(new Event("submit", { bubbles: true }));
-                  }
-                }, 1000);
-              } else {
-                console.log(
-                  "El email del usuario autenticado no coincide con la credencial almacenada."
+                const submitButton = form.querySelector(
+                  'button[type="submit"], input[type="submit"]'
                 );
-              }
+                if (submitButton) {
+                  submitButton.click();
+                } else {
+                  form.dispatchEvent(new Event("submit", { bubbles: true }));
+                }
+              }, 1000);
             }
           })
           .catch((err) => console.error("Error al verificar credencial:", err));
