@@ -1,5 +1,17 @@
 console.log("Content script cargado y en ejecución");
 
+const cleanUrl = (url) => {
+  try {
+    let parsedUrl = new URL(url);
+    return parsedUrl.origin + parsedUrl.pathname;
+  } catch (e) {
+    console.error("Error al limpiar la URL:", e);
+    return url;
+  }
+};
+
+const normalizeEmail = (email) => email.trim().toLowerCase();
+
 const detectForms = () => {
   const forms = document.querySelectorAll("form");
 
@@ -46,7 +58,7 @@ const detectForms = () => {
         const token = response.token;
         const userId = response.user_id;
         const userEmail = response.email;
-        const roleUser = response.role_id;
+        const roleUser = Number(response.role_id);
         const nameUser = response.name;
         const nameRole = response.role;
         console.log(
@@ -76,26 +88,44 @@ const detectForms = () => {
             console.log("Respuesta completa de la API:", data);
 
             if (data.passwords && data.passwords.length > 0) {
+              const cleanedFullUrl = cleanUrl(fullUrl);
+              const cleanedBaseUrl = cleanUrl(baseUrl);
+
               let credentials =
                 data.passwords.find(
                   (cred) =>
-                    cred.url === fullUrl &&
-                    cred.username === userEmail &&
-                    cred.password_role?.role_id === 2
+                    cleanUrl(cred.url) === cleanedFullUrl &&
+                    normalizeEmail(cred.username) ===
+                      normalizeEmail(userEmail) &&
+                    Number(cred.password_role?.role_id) === 2
                 ) ||
                 data.passwords.find(
                   (cred) =>
-                    cred.url === baseUrl &&
-                    cred.password_role?.role_id === userRole &&
-                    cred.password_role?.role_id !== 2
+                    cleanUrl(cred.url) === cleanedBaseUrl &&
+                    normalizeEmail(cred.username) ===
+                      normalizeEmail(userEmail) &&
+                    Number(cred.password_role?.role_id) === Number(roleUser) &&
+                    Number(cred.password_role?.role_id) !== 2
+                ) ||
+                data.passwords.find(
+                  (cred) =>
+                    cleanedFullUrl.startsWith(cleanUrl(cred.url)) &&
+                    normalizeEmail(cred.username) ===
+                      normalizeEmail(userEmail) && // Asegurar que es del usuario
+                    Number(cred.password_role?.role_id) === Number(roleUser)
                 );
-
-              console.log(
-                data.passwords.find((cred) => cred.password_role?.password_id)
-              );
 
               if (!credentials) {
                 console.log("No se encontró una credencial exacta.");
+                return;
+              }
+
+              if (
+                Number(credentials.password_role?.role_id) !== Number(roleUser)
+              ) {
+                console.warn(
+                  "Los roles NO coinciden. No se debe autocompletar."
+                );
                 return;
               }
 
@@ -136,85 +166,104 @@ const detectForms = () => {
         setTimeout(() => {
           if (userField.value && passField.value) {
             if (!credentialExists) {
-              if (confirm("¿Desea guardar esta contraseña?")) {
-                chrome.runtime.sendMessage(
-                  { type: "GET_TOKEN" },
-                  (response) => {
-                    if (chrome.runtime.lastError) {
-                      console.error(
-                        "Error al obtener el token:",
-                        chrome.runtime.lastError
-                      );
-                      return;
-                    }
+              chrome.runtime.sendMessage({ type: "GET_TOKEN" }, (response) => {
+                if (chrome.runtime.lastError) {
+                  console.error(
+                    "Error al obtener el token:",
+                    chrome.runtime.lastError
+                  );
+                  return;
+                }
 
-                    if (!response || !response.token || !response.user_id) {
-                      console.warn(
-                        "No se pudo obtener el token. Asegúrate de estar autenticado."
-                      );
-                      return;
-                    }
+                if (
+                  !response ||
+                  !response.token ||
+                  !response.user_id ||
+                  !response.role_id
+                ) {
+                  console.warn(
+                    "No se pudo obtener el token o role_id. Asegúrate de estar autenticado."
+                  );
+                  return;
+                }
 
-                    const token = response.token;
-                    const userId = response.user_id;
-                    const title = prompt(
-                      "Ingrese un nombre para esta credencial:",
-                      document.title || "Nueva Credencial"
-                    );
+                const token = response.token;
+                const userId = response.user_id;
+                const roleUser = Number(response.role_id);
 
-                    const credentials = {
-                      title,
-                      url: fullUrl,
-                      username: userField.value,
-                      password: passField.value,
-                      role_ids: [2],
-                      registered_by: userId,
-                    };
-
-                    console.log(
-                      "Enviando datos para guardar contraseña:",
-                      credentials
-                    );
-
-                    fetch("http://localhost:8000/api/store-password", {
-                      method: "POST",
-                      headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                      },
-                      body: JSON.stringify(credentials),
-                    })
-                      .then((res) => res.json())
-                      .then((data) => {
-                        console.log(
-                          "Respuesta de la API al guardar contraseña:",
-                          data
-                        );
-
-                        if (
-                          data.success ||
-                          (data.message &&
-                            data.message.toLowerCase().includes("success"))
-                        ) {
-                          alert("Contraseña guardada exitosamente.");
-                          form.submit();
-                        } else {
-                          alert(
-                            `Error al guardar la contraseña: ${
-                              data.message || "Error desconocido"
-                            }`
-                          );
-                        }
-                      })
-                      .catch((err) => {
-                        console.error("Error al guardar contraseña:", err);
-                        alert("Hubo un error al guardar la contraseña.");
-                      });
-                  }
+                console.log(
+                  "🔹 Verificando roleUser antes de mostrar el mensaje:"
                 );
-              } else {
-                form.submit();
-              }
+                console.log("roleUser:", roleUser);
+                console.log("¿Es roleUser == 2?", roleUser === 2);
+
+                if (roleUser !== 2) {
+                  console.log(
+                    "Usuario sin permisos para guardar la contraseña. Iniciando sesión normalmente."
+                  );
+                  form.submit();
+                  return;
+                }
+
+                if (confirm("¿Desea guardar esta contraseña?")) {
+                  const title = prompt(
+                    "Ingrese un nombre para esta credencial:",
+                    document.title || "Nueva Credencial"
+                  );
+
+                  const credentials = {
+                    title,
+                    url: fullUrl,
+                    username: userField.value,
+                    password: passField.value,
+                    role_ids: [2],
+                    registered_by: userId,
+                  };
+
+                  console.log(
+                    "Enviando datos para guardar contraseña:",
+                    credentials
+                  );
+
+                  fetch("http://localhost:8000/api/store-password", {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify(credentials),
+                  })
+                    .then((res) => res.json())
+                    .then((data) => {
+                      console.log(
+                        "Respuesta de la API al guardar contraseña:",
+                        data
+                      );
+
+                      if (
+                        data.success ||
+                        (data.message &&
+                          data.message.toLowerCase().includes("success"))
+                      ) {
+                        alert("Contraseña guardada exitosamente.");
+                      } else {
+                        alert(
+                          `Error al guardar la contraseña: ${
+                            data.message || "Error desconocido"
+                          }`
+                        );
+                      }
+                      form.submit();
+                    })
+                    .catch((err) => {
+                      console.error("Error al guardar contraseña:", err);
+                      alert("Hubo un error al guardar la contraseña.");
+                      form.submit();
+                    });
+                } else {
+                  form.submit();
+                }
+              });
             } else {
               form.submit();
             }
