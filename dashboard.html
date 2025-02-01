@@ -99,13 +99,15 @@
       }
 
       .profile-image {
-        width: 80px;
-        height: 80px;
+        width: 90px;
+        height: 90px;
         border-radius: 50%;
         border: 2px solid #ccc;
-        object-fit: cover;
+        object-fit: contain;
+        background-color: white;
         cursor: pointer;
         margin-bottom: 10px;
+        padding: 5px;
       }
     </style>
   </head>
@@ -125,7 +127,7 @@
           </h2>
           <div class="profile-container">
             <img
-              src="icons/default-profile-2.png"
+              src="icons/perfil.png"
               alt="Profile Image"
               class="profile-image"
             />
