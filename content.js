@@ -160,113 +160,105 @@ const detectForms = () => {
           .catch((err) => console.error("Error al verificar credencial:", err));
       });
 
-      form.addEventListener("submit", (event) => {
+      form.addEventListener("submit", async (event) => {
         event.preventDefault();
 
-        setTimeout(() => {
-          if (userField.value && passField.value) {
-            if (!credentialExists) {
-              chrome.runtime.sendMessage({ type: "GET_TOKEN" }, (response) => {
-                if (chrome.runtime.lastError) {
-                  console.error(
-                    "Error al obtener el token:",
-                    chrome.runtime.lastError
-                  );
-                  return;
-                }
+        setTimeout(async () => {
+          if (!userField.value || !passField.value) return;
 
-                if (
-                  !response ||
-                  !response.token ||
-                  !response.user_id ||
-                  !response.role_id
-                ) {
-                  console.warn(
-                    "No se pudo obtener el token o role_id. Asegúrate de estar autenticado."
-                  );
-                  return;
-                }
+          if (credentialExists) {
+            form.submit();
+            return;
+          }
 
-                const token = response.token;
-                const userId = response.user_id;
-                const roleUser = Number(response.role_id);
-
-                console.log(
-                  "🔹 Verificando roleUser antes de mostrar el mensaje:"
-                );
-                console.log("roleUser:", roleUser);
-                console.log("¿Es roleUser == 2?", roleUser === 2);
-
-                if (roleUser !== 2) {
-                  console.log(
-                    "Usuario sin permisos para guardar la contraseña. Iniciando sesión normalmente."
-                  );
-                  form.submit();
-                  return;
-                }
-
-                if (confirm("¿Desea guardar esta contraseña?")) {
-                  const title = prompt(
-                    "Ingrese un nombre para esta credencial:",
-                    document.title || "Nueva Credencial"
-                  );
-
-                  const credentials = {
-                    title,
-                    url: fullUrl,
-                    username: userField.value,
-                    password: passField.value,
-                    role_ids: [2],
-                    registered_by: userId,
-                  };
-
-                  console.log(
-                    "Enviando datos para guardar contraseña:",
-                    credentials
-                  );
-
-                  fetch("http://localhost:8000/api/store-password", {
-                    method: "POST",
-                    headers: {
-                      "Content-Type": "application/json",
-                      Authorization: `Bearer ${token}`,
-                    },
-                    body: JSON.stringify(credentials),
-                  })
-                    .then((res) => res.json())
-                    .then((data) => {
-                      console.log(
-                        "Respuesta de la API al guardar contraseña:",
-                        data
-                      );
-
-                      if (
-                        data.success ||
-                        (data.message &&
-                          data.message.toLowerCase().includes("success"))
-                      ) {
-                        alert("Contraseña guardada exitosamente.");
-                      } else {
-                        alert(
-                          `Error al guardar la contraseña: ${
-                            data.message || "Error desconocido"
-                          }`
-                        );
-                      }
-                      form.submit();
-                    })
-                    .catch((err) => {
-                      console.error("Error al guardar contraseña:", err);
-                      alert("Hubo un error al guardar la contraseña.");
-                      form.submit();
-                    });
-                } else {
-                  form.submit();
-                }
-              });
-            } else {
+          try {
+            const response = await chrome.runtime.sendMessage({
+              type: "GET_TOKEN",
+            });
+            if (
+              !response ||
+              !response.token ||
+              !response.user_id ||
+              !response.role_id
+            ) {
+              console.warn(
+                "No se pudo obtener el token o role_id. Asegúrate de estar autenticado."
+              );
               form.submit();
+              return;
             }
+
+            const { token, user_id: userId, role_id: roleUser } = response;
+            console.log(
+              "Verificando roleUser antes de mostrar el mensaje:",
+              roleUser
+            );
+
+            if (Number(roleUser) !== 2) {
+              console.log(
+                "Usuario sin permisos para guardar la contraseña. Iniciando sesión normalmente."
+              );
+              form.submit();
+              return;
+            }
+
+            if (!confirm("¿Desea guardar esta contraseña?")) {
+              form.submit();
+              return;
+            }
+
+            const title = prompt(
+              "Ingrese un nombre para esta credencial:",
+              document.title || "Nueva Credencial"
+            );
+            if (!title) {
+              form.submit();
+              return;
+            }
+
+            const credentials = {
+              title,
+              url: fullUrl,
+              username: userField.value,
+              password: passField.value,
+              role_ids: [2],
+              registered_by: userId,
+            };
+
+            console.log("Enviando datos para guardar contraseña:", credentials);
+
+            const res = await fetch(
+              "http://localhost:8000/api/store-password",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(credentials),
+              }
+            );
+
+            const data = await res.json();
+            console.log("Respuesta de la API al guardar contraseña:", data);
+
+            if (
+              data.success ||
+              (data.message && data.message.toLowerCase().includes("success"))
+            ) {
+              alert("Contraseña guardada exitosamente.");
+            } else {
+              alert(
+                `Error al guardar la contraseña: ${
+                  data.message || "Error desconocido"
+                }`
+              );
+            }
+          } catch (error) {
+            console.error("Error al procesar la solicitud:", error);
+            alert("Hubo un error al procesar la solicitud.");
+          } finally {
+            form.submit();
           }
         }, 500);
       });
