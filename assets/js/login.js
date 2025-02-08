@@ -52,13 +52,13 @@ document.addEventListener("DOMContentLoaded", () => {
                     "Error al guardar el token y user_id:",
                     chrome.runtime.lastError
                   );
-                  alert("Hubo un problema al guardar la sesión.");
+                  // alert("Hubo un problema al guardar la sesión.");
                 } else {
                   console.log("Sesión guardada correctamente:", {
                     token: data.success.token,
                     user_id: data.success.user_id,
                   });
-                  alert("Inicio de sesión exitoso.");
+                  // alert("Inicio de sesión exitoso.");
 
                   setTimeout(() => {
                     window.location.href = "dashboard.html";

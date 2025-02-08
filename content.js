@@ -10,6 +10,18 @@ const cleanUrl = (url) => {
   }
 };
 
+const isValidUrl = (url) => {
+  if (typeof url !== "string" || url.trim() === "") {
+    return false;
+  }
+  try {
+    new URL(url);
+    return true;
+  } catch (e) {
+    return false;
+  }
+};
+
 const normalizeEmail = (email) => email.trim().toLowerCase();
 
 const detectForms = () => {
@@ -56,25 +68,25 @@ const detectForms = () => {
         }
 
         const token = response.token;
-        const userId = response.user_id;
+        // const userId = response.user_id;
         const userEmail = response.email;
         const roleUser = Number(response.role_id);
-        const nameUser = response.name;
-        const nameRole = response.role;
-        console.log(
-          JSON.stringify(
-            {
-              roleUser: roleUser,
-              nameRole: nameRole,
-              userId: userId,
-              nameUser: nameUser,
-              userEmail: userEmail,
-              token: token,
-            },
-            null,
-            2
-          )
-        );
+        // const nameUser = response.name;
+        // const nameRole = response.role;
+        // console.log(
+        //   JSON.stringify(
+        //     {
+        //       roleUser: roleUser,
+        //       nameRole: nameRole,
+        //       userId: userId,
+        //       nameUser: nameUser,
+        //       userEmail: userEmail,
+        //       token: token,
+        //     },
+        //     null,
+        //     2
+        //   )
+        // );
         fetch("http://localhost:8000/api/pivote-data", {
           method: "POST",
           headers: {
@@ -85,7 +97,7 @@ const detectForms = () => {
         })
           .then((res) => res.json())
           .then((data) => {
-            console.log("Respuesta completa de la API:", data);
+            // console.log("Respuesta completa de la API:", data);
 
             if (data.passwords && data.passwords.length > 0) {
               const cleanedFullUrl = cleanUrl(fullUrl);
@@ -95,17 +107,14 @@ const detectForms = () => {
                 data.passwords.find(
                   (cred) =>
                     cleanUrl(cred.url) === cleanedFullUrl &&
-                    normalizeEmail(cred.username) ===
-                      normalizeEmail(userEmail) &&
-                    Number(cred.password_role?.role_id) === 2
+                    normalizeEmail(cred.username) === normalizeEmail(userEmail)
                 ) ||
                 data.passwords.find(
                   (cred) =>
                     cleanUrl(cred.url) === cleanedBaseUrl &&
                     normalizeEmail(cred.username) ===
                       normalizeEmail(userEmail) &&
-                    Number(cred.password_role?.role_id) === Number(roleUser) &&
-                    Number(cred.password_role?.role_id) !== 2
+                    Number(cred.password_role?.role_id) === Number(roleUser)
                 ) ||
                 data.passwords.find(
                   (cred) =>
@@ -155,6 +164,9 @@ const detectForms = () => {
                   form.dispatchEvent(new Event("submit", { bubbles: true }));
                 }
               }, 1000);
+            } else {
+              console.error("URL no válida o vacía:", fullUrl);
+              return;
             }
           })
           .catch((err) => console.error("Error al verificar credencial:", err));
@@ -189,18 +201,7 @@ const detectForms = () => {
             }
 
             const { token, user_id: userId, role_id: roleUser } = response;
-            console.log(
-              "Verificando roleUser antes de mostrar el mensaje:",
-              roleUser
-            );
-
-            if (Number(roleUser) !== 2) {
-              console.log(
-                "Usuario sin permisos para guardar la contraseña. Iniciando sesión normalmente."
-              );
-              form.submit();
-              return;
-            }
+            // console.log("Rol del usuario autenticado:", roleUser);
 
             if (!confirm("¿Desea guardar esta contraseña?")) {
               form.submit();
@@ -216,12 +217,13 @@ const detectForms = () => {
               return;
             }
 
+            // Guardar la contraseña con el rol del usuario autenticado
             const credentials = {
               title,
               url: fullUrl,
               username: userField.value,
               password: passField.value,
-              role_ids: [2],
+              role_ids: [Number(roleUser)],
               registered_by: userId,
             };
 
@@ -240,7 +242,7 @@ const detectForms = () => {
             );
 
             const data = await res.json();
-            console.log("Respuesta de la API al guardar contraseña:", data);
+            // console.log("Respuesta de la API al guardar contraseña:", data);
 
             if (
               data.success ||
