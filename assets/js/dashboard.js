@@ -106,7 +106,7 @@ function loadCredentials(token) {
         addToggleListeners();
       } else {
         credentialsContainer.innerHTML =
-          "<p>No hay credenciales guardadas.</p>";
+          "<p>No hay credenciales asignadas.</p>";
       }
     })
     .catch((err) => console.error("Error al obtener credenciales:", err));

@@ -97,7 +97,7 @@ h2 {
   color: white;
 }
 
-/* Botón de cerrar sesión */
+/* Botón de cerrar sesión
 .logout {
   width: 100%;
   max-width: 100px;
@@ -116,8 +116,45 @@ h2 {
 
 .logout:hover {
   background: #c9302c;
+} */
+
+/* Nombre y email del usuario */
+.account-info {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  margin-top: 10px;
 }
 
+#userEmail {
+  font-size: 14px;
+  font-weight: normal;
+  color: #666;
+}
+
+
+/* Botón de cerrar sesión */
+#logoutButton {
+  background: #d9534f;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  margin-top: 15px;
+  border-radius: 25px;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out, transform 0.2s ease-in-out;
+}
+
+#logoutButton i {
+  margin-right: 8px;
+}
+
+#logoutButton:hover {
+  background: #c9302c;
+  transform: scale(1.05);
+}
 .password-container {
   position: relative;
   display: flex;

@@ -95,7 +95,14 @@
 
       /* Perfil de usuario */
       .profile-container {
+        background: white;
+        padding: 20px;
+        width: 83%;
+        max-width: 350px;
+        border-radius: 12px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
         text-align: center;
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
       }
 
       .profile-image {
@@ -119,7 +126,7 @@
           <h2>Passwords</h2>
           <div id="credentialsContainer"></div>
         </div>
-        <br />
+        <br /><br />
 
         <div id="profile" class="section">
           <h2>
@@ -135,7 +142,7 @@
             <p class="account-info"><span id="userEmail"></span></p>
           </div>
           <button class="logout" id="logoutButton">
-            <i class="fas fa-sign-out-alt"></i> Sign Out
+            <i class="fas fa-sign-out-alt"></i>Logout
           </button>
         </div>
 
