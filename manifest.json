@@ -11,7 +11,7 @@
     "notifications"
   ],
   "host_permissions": [
-    "http://localhost:8000/api/*"
+      "https://passadmin-server.alinstante.today/public/api/*"
   ],
   "background": {
     "service_worker": "background.js",
@@ -20,26 +20,27 @@
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
-      "128": "icons/logo.png"
+      "128": "icons/Logo_Asap.png"
     }
   },
   "icons": {
-    "128": "icons/logo.png"
+    "128": "icons/Logo_Asap.png"
   },
   "content_scripts": [
     {
       "matches": ["https://*/*", "http://*/*"],
-      "js": ["content.js"],
+      "js": ["api/config.js", "content.js"],
       "run_at": "document_idle"
     }
   ],
   "web_accessible_resources": [
     {
-      "resources": ["icons/logo.png", "assets/css/*", "assets/js/*"],
+      "resources": ["icons/Logo_Asap.png", "assets/css/*", "assets/js/*"],
       "matches": ["<all_urls>"]
     }
   ],
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'none';"
-  }
+  "extension_pages": "script-src 'self'; object-src 'none'; connect-src 'self' https://passadmin-server.alinstante.today;"
+}
+
 }

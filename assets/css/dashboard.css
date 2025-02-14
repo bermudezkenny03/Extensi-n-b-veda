@@ -197,3 +197,69 @@ h2 {
   opacity: 1;
 }
 
+/* Generador de Contraseñas */
+.pg-title {
+  font-size: 20px;
+  margin-bottom: 40px;
+}
+
+.pg-input-group, .pg-checkbox-group {
+  margin-bottom: 15px;
+  text-align: left; 
+}
+
+.pg-input-group label, .pg-checkbox-group label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.pg-input-group input, .pg-checkbox-group input {
+  width: 88%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.pg-checkbox-group {
+  display: flex;
+  align-items: center;
+}
+
+.pg-checkbox-group input {
+  width: auto;  
+  margin-right: 10px;
+}
+
+.pg-button {
+  background: #d9534f;
+  color: white;
+  border: none;
+  padding: 12px 35px;
+  margin-top: 15px;
+  border-radius: 25px;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.pg-button:hover {
+  background-color: #c9302c;
+  transform: scale(1.05);
+}
+
+.pg-password-display {
+  margin: 20px auto; 
+  padding: 10px;
+  background-color: #f1f1f1;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  max-width: 80%; 
+  word-wrap: break-word; 
+}
+

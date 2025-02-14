@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const apiUrl = "http://localhost:8000/api/login"; // Ajusta la URL según sea necesario
+    const apiUrl = `${API_BASE_URL}login`;
     const credentials = { email, password };
 
     fetch(apiUrl, {

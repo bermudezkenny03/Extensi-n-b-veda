@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      fetch("http://localhost:8000/api/logout", {
+      fetch(`${API_BASE_URL}logout`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -73,7 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
  * Función para cargar las credenciales del usuario autenticado
  */
 function loadCredentials(token) {
-  fetch("http://localhost:8000/api/passwords", {
+  fetch(`${API_BASE_URL}passwords`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -129,4 +129,34 @@ function addToggleListeners() {
         : eyeIcons.open;
     });
   });
+}
+document.addEventListener("DOMContentLoaded", () => {
+  const generateButton = document.getElementById("generateButton");
+
+  generateButton.addEventListener("click", generatePassword);
+});
+
+function generatePassword() {
+  const length = document.getElementById("length").value;
+  const includeNumbers = document.getElementById("includeNumbers").checked;
+  const includeSymbols = document.getElementById("includeSymbols").checked;
+  const includeUppercase = document.getElementById("includeUppercase").checked;
+
+  const lowerChars = "abcdefghijklmnopqrstuvwxyz";
+  const upperChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const numberChars = "0123456789";
+  const symbolChars = "!@#$%^&*()_+~`|}{[]:;?><,./-=";
+
+  let charSet = lowerChars;
+  if (includeUppercase) charSet += upperChars;
+  if (includeNumbers) charSet += numberChars;
+  if (includeSymbols) charSet += symbolChars;
+
+  let password = "";
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * charSet.length);
+    password += charSet[randomIndex];
+  }
+
+  document.getElementById("generatedPassword").textContent = password;
 }

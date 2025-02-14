@@ -146,8 +146,32 @@
           </button>
         </div>
 
-        <div id="create-password" class="section">
-          <h2>Create Password</h2>
+        <div id="password-generator" class="section">
+          <h2 class="pg-title">Password Generator</h2>
+
+          <div class="pg-input-group">
+            <label for="length">Longitud:</label>
+            <input type="number" id="length" min="8" max="32" value="12" />
+          </div>
+
+          <div class="pg-checkbox-group">
+            <input type="checkbox" id="includeNumbers" checked />
+            <label for="includeNumbers">Incluir Números</label>
+          </div>
+
+          <div class="pg-checkbox-group">
+            <input type="checkbox" id="includeSymbols" checked />
+            <label for="includeSymbols">Incluir Símbolos</label>
+          </div>
+
+          <div class="pg-checkbox-group">
+            <input type="checkbox" id="includeUppercase" checked />
+            <label for="includeUppercase">Incluir Mayúsculas</label>
+          </div>
+
+          <button id="generateButton" class="pg-button">Generar</button>
+
+          <div id="generatedPassword" class="pg-password-display"></div>
         </div>
       </div>
       <br /><br />
@@ -157,9 +181,9 @@
           <i class="fa-solid fa-vault"></i>
           <span>Bóveda</span>
         </div>
-        <div class="nav-item" data-section="create-password">
-          <i class="fas fa-key"></i>
-          <span>Create</span>
+        <div class="nav-item" data-section="password-generator">
+          <i class="fas fa-random"></i>
+          <span>Generar</span>
         </div>
         <div class="nav-item" data-section="profile">
           <i class="fas fa-user"></i>
@@ -169,5 +193,6 @@
     </div>
 
     <script src="assets/js/dashboard.js"></script>
+    <script src="api/config.js"></script>
   </body>
 </html>

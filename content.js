@@ -87,11 +87,12 @@ const detectForms = () => {
         //     2
         //   )
         // );
-        fetch("http://localhost:8000/api/pivote-data", {
+        fetch(`${API_BASE_URL}pivote-data`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`, // Asegúrate de que 'token' es válido
+            Accept: "application/json",
           },
           body: JSON.stringify({ url: baseUrl }),
         })
@@ -149,15 +150,17 @@ const detectForms = () => {
 
               setTimeout(() => {
                 console.log("Intentando iniciar sesión automáticamente...");
+
+                userField.value = userField.value.trim();
                 userField.dispatchEvent(new Event("input", { bubbles: true }));
+
+                passField.value = passField.value.trim();
                 passField.dispatchEvent(new Event("input", { bubbles: true }));
-                passField.dispatchEvent(
-                  new KeyboardEvent("keydown", { key: "Enter", bubbles: true })
-                );
 
                 const submitButton = form.querySelector(
                   'button[type="submit"], input[type="submit"]'
                 );
+
                 if (submitButton) {
                   submitButton.click();
                 } else {
@@ -229,17 +232,14 @@ const detectForms = () => {
 
             console.log("Enviando datos para guardar contraseña:", credentials);
 
-            const res = await fetch(
-              "http://localhost:8000/api/store-password",
-              {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                  Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify(credentials),
-              }
-            );
+            const res = await fetch(`${API_BASE_URL}store-password`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify(credentials),
+            });
 
             const data = await res.json();
             // console.log("Respuesta de la API al guardar contraseña:", data);
