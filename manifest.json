@@ -7,12 +7,10 @@
     "storage",
     "activeTab"
   ],
-  "host_permissions": [
+  "optional_host_permissions": [
     "https://passadmin-server.alinstante.today/public/api/pivote-data/*",
     "https://passadmin-server.alinstante.today/public/api/login/*",
-    "https://passadmin-server.alinstante.today/public/api/logout/*"
-  ],
-  "optional_host_permissions": [
+    "https://passadmin-server.alinstante.today/public/api/logout/*",
     "https://passadmin-server.alinstante.today/public/api/store-password/*",
     "https://passadmin-server.alinstante.today/public/api/passwords/*"
   ],
@@ -43,6 +41,6 @@
     }
   ],
   "content_security_policy": {
-    "extension_pages": "default-src 'self'; script-src 'self'; object-src 'none'; connect-src 'self' https://passadmin-server.alinstante.today"
+    "extension_pages": "script-src 'self'; object-src 'none'; connect-src 'self' https://passadmin-server.alinstante.today"
   }
 }
