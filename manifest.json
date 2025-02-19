@@ -1,17 +1,14 @@
 {
   "manifest_version": 3,
   "name": "Password Vault",
-  "version": "1.0",
+  "version": "1.0.1",
   "description": "Extensión para gestionar contraseñas.",
   "permissions": [
     "storage",
-    "activeTab",
-    "scripting",
-    "declarativeContent",
-    "notifications"
+    "activeTab"
   ],
   "host_permissions": [
-      "https://passadmin-server.alinstante.today/public/api/*"
+    "https://passadmin-server.alinstante.today/public/api/*"
   ],
   "background": {
     "service_worker": "background.js",
@@ -40,7 +37,6 @@
     }
   ],
   "content_security_policy": {
-  "extension_pages": "script-src 'self'; object-src 'none'; connect-src 'self' https://passadmin-server.alinstante.today;"
-}
-
+    "extension_pages": "script-src 'self'; object-src 'none'; connect-src 'self' https://passadmin-server.alinstante.today"
+  }
 }

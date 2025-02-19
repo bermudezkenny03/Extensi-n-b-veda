@@ -1,4 +1,4 @@
-console.log("Content script cargado y en ejecución");
+// console.log("Content script cargado y en ejecución");
 
 const cleanUrl = (url) => {
   try {
@@ -37,12 +37,12 @@ const detectForms = () => {
     const passField = form.querySelector('input[type="password"]');
 
     if (userField && passField) {
-      console.log("Formulario detectado:", form);
+      // console.log("Formulario detectado:", form);
 
       const url = new URL(window.location.href);
       const fullUrl = url.href;
       const baseUrl = url.origin;
-      console.log("Buscando credenciales para:", fullUrl);
+      // console.log("Buscando credenciales para:", fullUrl);
 
       let credentialExists = false;
 
@@ -126,20 +126,20 @@ const detectForms = () => {
                 );
 
               if (!credentials) {
-                console.log("No se encontró una credencial exacta.");
+                // console.log("No se encontró una credencial exacta.");
                 return;
               }
 
               if (
                 Number(credentials.password_role?.role_id) !== Number(roleUser)
               ) {
-                console.warn(
-                  "Los roles NO coinciden. No se debe autocompletar."
-                );
+                // console.warn(
+                //   "Los roles NO coinciden. No se debe autocompletar."
+                // );
                 return;
               }
 
-              console.log("Credencial encontrada:", credentials);
+              // console.log("Credencial encontrada:", credentials);
               credentialExists = true;
 
               // Autocompletar credenciales
@@ -149,7 +149,7 @@ const detectForms = () => {
               alert("Se han autocompletado las credenciales guardadas.");
 
               setTimeout(() => {
-                console.log("Intentando iniciar sesión automáticamente...");
+                // console.log("Intentando iniciar sesión automáticamente...");
 
                 userField.value = userField.value.trim();
                 userField.dispatchEvent(new Event("input", { bubbles: true }));
@@ -196,9 +196,9 @@ const detectForms = () => {
               !response.user_id ||
               !response.role_id
             ) {
-              console.warn(
-                "No se pudo obtener el token o role_id. Asegúrate de estar autenticado."
-              );
+              // console.warn(
+              //   "No se pudo obtener el token o role_id. Asegúrate de estar autenticado."
+              // );
               form.submit();
               return;
             }
@@ -230,7 +230,7 @@ const detectForms = () => {
               registered_by: userId,
             };
 
-            console.log("Enviando datos para guardar contraseña:", credentials);
+            // console.log("Enviando datos para guardar contraseña:", credentials);
 
             const res = await fetch(`${API_BASE_URL}store-password`, {
               method: "POST",
@@ -257,7 +257,7 @@ const detectForms = () => {
               );
             }
           } catch (error) {
-            console.error("Error al procesar la solicitud:", error);
+            // console.error("Error al procesar la solicitud:", error);
             alert("Hubo un error al procesar la solicitud.");
           } finally {
             form.submit();
